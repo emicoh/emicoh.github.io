@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EMICOH S.A. | Empresa Minera Corazón de Huayna</title>
+<meta name="description" content="Empresa Minera Corazón de Huayna S.A. (EMICOH S.A.) – Phara, Sandia, Puno.">
+<link rel="icon" href="img/favicon.png?v=2">
+<style>
+:root{--cielo:#2aa7e6;--cielo2:#bfe5f8;--naranja:#f39c12;--amarillo:#f7c51e;--verde:#1fa83a;--cafe:#7a4a1e;--tinta:#1c2733;--gris:#5b6672}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:"Segoe UI",system-ui,sans-serif;color:var(--tinta);background:#fff;line-height:1.7}
+a{color:inherit}
+.wrap{max-width:1080px;margin:auto;padding:0 22px}
+header{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.95);backdrop-filter:blur(8px);border-bottom:1px solid #e6eef3}
+header .wrap{display:flex;align-items:center;justify-content:space-between;height:70px}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;font-weight:800;color:var(--tinta)}
+.brand img{height:50px}
+.brand small{display:block;font-weight:500;font-size:.72rem;color:var(--gris)}
+nav a{text-decoration:none;margin-left:24px;font-size:.93rem;font-weight:500;color:var(--gris)}
+nav a:hover{color:var(--cielo)}
+#menu{display:none;background:none;border:0;font-size:1.7rem;cursor:pointer;color:var(--tinta)}
+.hero{background:linear-gradient(180deg,var(--cielo) 0%,var(--cielo2) 55%,#fff 100%);text-align:center;padding:60px 0 80px}
+.hero img{width:min(560px,90%);filter:drop-shadow(0 10px 22px rgba(0,0,0,.18))}
+.hero h1{font-size:clamp(1.7rem,4vw,2.7rem);line-height:1.2;margin-top:24px}
+.hero p{max-width:620px;margin:14px auto 28px;color:var(--gris);font-size:1.1rem}
+.btn{display:inline-block;padding:13px 28px;border-radius:40px;background:var(--verde);color:#fff;font-weight:700;text-decoration:none;margin:4px;border:0;cursor:pointer;font:inherit;font-weight:700}
+.btn.alt{background:#fff;color:var(--tinta);border:2px solid var(--tinta)}
+section{padding:80px 0}
+.tag{color:var(--naranja);font-weight:700;text-transform:uppercase;letter-spacing:2px;font-size:.8rem}
+h2{font-size:clamp(1.6rem,3.2vw,2.3rem);margin:6px 0 16px;line-height:1.25}
+.lead{color:var(--gris);max-width:720px;font-size:1.05rem}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:34px}
+.card{background:#fff;border:1px solid #e6eef3;border-radius:16px;padding:28px;box-shadow:0 6px 20px rgba(28,39,51,.06)}
+.card .ic{width:48px;height:48px;border-radius:12px;display:grid;place-items:center;font-size:1.5rem;margin-bottom:14px}
+.card h3{margin-bottom:6px}
+.card p{color:var(--gris);font-size:.95rem}
+.alt-bg{background:#f4f9fc}
+.c4{grid-template-columns:repeat(4,1fr)}
+.c4 .card{padding:22px}
+.c4 .card h3{font-size:1.05rem}
+.quote{margin:26px 0 0;padding:18px 24px;border-left:5px solid var(--naranja);background:#fff8ea;border-radius:10px;font-style:italic;font-size:1.1rem;max-width:760px}
+.sec-amb{background:linear-gradient(160deg,#16733a,#0f5129);color:#fff}
+.sec-amb h2{color:#fff}.sec-amb .lead{color:#d9f2e0}
+.sec-amb .card{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.15);box-shadow:none}
+.sec-amb .card p{color:#d9f2e0}
+.sec-amb .card .ic{background:rgba(255,255,255,.12)}
+.mv{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:30px}
+.mv .card{border-left:5px solid var(--cielo)}
+.mv .card:last-child{border-left-color:var(--verde)}
+.band{background:linear-gradient(90deg,var(--naranja),var(--amarillo));text-align:center;padding:60px 0}
+.band h2{color:#2b1700}.band p{color:#4a2c00;margin-bottom:18px}
+.contact{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:start}
+.info .row{display:flex;gap:12px;margin-bottom:14px}
+.info .row b{display:block;font-size:.8rem;color:var(--gris);text-transform:uppercase;letter-spacing:1px}
+form{background:#fff;padding:28px;border-radius:16px;border:1px solid #e6eef3;box-shadow:0 6px 20px rgba(28,39,51,.06);display:grid;gap:12px}
+input,textarea{width:100%;padding:12px;border:1px solid #d7e1e8;border-radius:10px;font:inherit}
+footer{background:var(--tinta);color:#b9c3cc;padding:36px 0;font-size:.88rem;text-align:center}
+footer img{height:70px;margin-bottom:10px}
+@media(max-width:860px){
+ nav{display:none;position:absolute;top:70px;left:0;right:0;background:#fff;padding:6px 22px 18px;border-bottom:1px solid #e6eef3}
+ nav.open{display:block}nav a{display:block;margin:12px 0}
+ #menu{display:block}
+ .cards,.mv,.contact{grid-template-columns:1fr}
+ .c4{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+
+<header>
+ <div class="wrap">
+  <a href="#inicio" class="brand"><img src="img/favicon.png?v=2" alt="Logo EMICOH S.A."><span>EMICOH S.A.<small>Empresa Minera Corazón de Huayna</small></span></a>
+  <button id="menu" aria-label="Menú">☰</button>
+  <nav id="nav">
+   <a href="#nosotros">Nosotros</a>
+   <a href="#valores">Valores</a>
+   <a href="#seguridad">Seguridad</a>
+   <a href="#ambiente">Medio ambiente</a>
+   <a href="#contacto">Contacto</a>
+  </nav>
+ </div>
+</header>
+
+<section class="hero" id="inicio">
+ <div class="wrap">
+  <img src="img/logo.png?v=2" alt="EMICOH S.A. – Phara">
+  <h1>Empresa Minera Corazón de Huayna S.A.</h1>
+  <p>Minería formal y responsable desde Phara, Sandia – Puno.</p>
+  <a href="#nosotros" class="btn">Conócenos</a>
+  <a href="#contacto" class="btn alt">Contáctanos</a>
+ </div>
+</section>
+
+<section id="nosotros">
+ <div class="wrap">
+  <span class="tag">Quiénes somos</span>
+  <h2>Una empresa de mineros de Phara</h2>
+  <p class="lead">EMICOH S.A. reúne a socios mineros del distrito de Phara, provincia de Sandia, región Puno, que trabajan unidos bajo una organización formal, comprometida con la seguridad, el ambiente y el desarrollo de su comunidad.</p>
+  <div class="mv">
+   <div class="card"><h3>Misión</h3><p>Desarrollar una actividad minera segura, formal y responsable, que genere bienestar para nuestros socios, trabajadores y comunidad.</p></div>
+   <div class="card"><h3>Visión</h3><p>Ser una empresa minera referente en la región Puno por su formalidad, su seguridad y su aporte al desarrollo local.</p></div>
+  </div>
+ </div>
+</section>
+
+<section class="alt-bg" id="valores">
+ <div class="wrap">
+  <span class="tag">Nuestros valores</span>
+  <h2>Lo que nos guía</h2>
+  <div class="cards">
+   <div class="card"><div class="ic" style="background:#e3f4fc">🦺</div><h3>Seguridad</h3><p>La vida y la salud de nuestros trabajadores están primero.</p></div>
+   <div class="card"><div class="ic" style="background:#fff3dc">📋</div><h3>Formalidad</h3><p>Trabajamos cumpliendo la normativa vigente.</p></div>
+   <div class="card"><div class="ic" style="background:#e3f6e7">🤝</div><h3>Unión</h3><p>Socios y trabajadores avanzamos juntos, con transparencia.</p></div>
+  </div>
+ </div>
+</section>
+
+<section id="seguridad" class="sec-seg">
+ <div class="wrap">
+  <span class="tag">Seguridad y salud en el trabajo</span>
+  <h2>La seguridad es nuestra primera responsabilidad</h2>
+  <p class="lead">Contamos con un sistema de Seguridad, Salud Ocupacional y Medio Ambiente (SSOMA) que acompaña cada actividad, de acuerdo con el Reglamento de Seguridad y Salud Ocupacional en Minería (D.S. N.° 024-2016-EM y sus modificatorias).</p>
+  <div class="quote">“Ningún trabajo es tan importante ni tan urgente que no pueda hacerse de forma segura.”</div>
+  <div class="cards c4">
+   <div class="card"><div class="ic" style="background:#e3f4fc">🎓</div><h3>Inducción y capacitación</h3><p>Todo trabajador y visitante recibe inducción antes de ingresar. Además, damos capacitaciones periódicas en temas de seguridad.</p></div>
+   <div class="card"><div class="ic" style="background:#fff3dc">⚠️</div><h3>IPERC</h3><p>Identificamos peligros, evaluamos riesgos y aplicamos controles antes de iniciar cada tarea.</p></div>
+   <div class="card"><div class="ic" style="background:#e3f6e7">🦺</div><h3>Equipos de protección</h3><p>Entregamos y controlamos el uso del EPP adecuado para cada actividad.</p></div>
+   <div class="card"><div class="ic" style="background:#fde8e8">🩺</div><h3>Salud ocupacional</h3><p>Realizamos exámenes médicos ocupacionales para cuidar la salud de nuestro personal.</p></div>
+   <div class="card"><div class="ic" style="background:#e3f4fc">🔍</div><h3>Inspecciones</h3><p>Hacemos inspecciones SSOMA periódicas, con seguimiento de cada observación hasta corregirla.</p></div>
+   <div class="card"><div class="ic" style="background:#fff3dc">🚨</div><h3>Preparación ante emergencias</h3><p>Estamos organizados para responder con rapidez ante cualquier emergencia.</p></div>
+   <div class="card"><div class="ic" style="background:#e3f6e7">📢</div><h3>Comunicación</h3><p>Damos charlas, comunicados y reuniones para mantener informados a socios y trabajadores.</p></div>
+   <div class="card"><div class="ic" style="background:#fde8e8">✋</div><h3>Derecho a decir “no”</h3><p>Todo trabajador puede detener una tarea si considera que no es segura.</p></div>
+  </div>
+ </div>
+</section>
+
+<section id="ambiente" class="sec-amb">
+ <div class="wrap">
+  <span class="tag" style="color:#bff0c9">Medio ambiente</span>
+  <h2>Cuidamos la tierra que nos da trabajo</h2>
+  <p class="lead">Trabajamos dentro del proceso de formalización minera, con instrumentos de gestión ambiental presentados ante la autoridad regional (DREM Puno). Así nuestra actividad respeta el entorno de Phara.</p>
+  <div class="cards c4">
+   <div class="card"><div class="ic">📑</div><h3>Gestión ambiental</h3><p>Contamos con instrumentos de gestión ambiental (IGAC / IGAFOM) y los mantenemos actualizados según la normativa.</p></div>
+   <div class="card"><div class="ic">💧</div><h3>Cuidado del agua</h3><p>Protegemos los cursos de agua y evitamos que reciban residuos de la actividad.</p></div>
+   <div class="card"><div class="ic">🛢️</div><h3>Hidrocarburos</h3><p>Almacenamos los combustibles de forma segura y tenemos kits antiderrame para responder a tiempo.</p></div>
+   <div class="card"><div class="ic">♻️</div><h3>Residuos sólidos</h3><p>Separamos y gestionamos los residuos, y mantenemos limpias las áreas de trabajo.</p></div>
+   <div class="card"><div class="ic">⛰️</div><h3>Manejo responsable</h3><p>Controlamos los materiales de la actividad minera para reducir el impacto en el suelo.</p></div>
+   <div class="card"><div class="ic">🚻</div><h3>Saneamiento</h3><p>Damos servicios higiénicos adecuados para el personal, cuidando la salud y el entorno.</p></div>
+   <div class="card"><div class="ic">🌱</div><h3>Cierre progresivo</h3><p>Planificamos la recuperación de las áreas intervenidas, como pide la normativa.</p></div>
+   <div class="card"><div class="ic">🤝</div><h3>Con la comunidad</h3><p>Coordinamos con las autoridades y la población de Phara sobre los temas ambientales.</p></div>
+  </div>
+ </div>
+</section>
+
+<section id="comunidad">
+ <div class="wrap">
+  <span class="tag">Comunidad</span>
+  <h2>Crecemos junto a Phara</h2>
+  <p class="lead">Participamos en la vida de nuestro distrito: sus celebraciones, el deporte y el desarrollo local.</p>
+ </div>
+</section>
+
+<section class="band">
+ <div class="wrap">
+  <h2>¿Quieres trabajar con nosotros?</h2>
+  <p>Escríbenos y déjanos tus datos.</p>
+  <a href="#contacto" class="btn" style="background:var(--tinta)">Escríbenos</a>
+ </div>
+</section>
+
+<section class="alt-bg" id="contacto">
+ <div class="wrap contact">
+  <div class="info">
+   <span class="tag">Contacto</span>
+   <h2>Datos generales</h2>
+   <div class="row"><div><b>Razón social</b>Empresa Minera Corazón de Huayna S.A.</div></div>
+   <div class="row"><div><b>RUC</b>20448523811</div></div>
+   <div class="row"><div><b>Ubicación</b>Distrito de Phara, provincia de Sandia, Puno – Perú</div></div>
+   <div class="row"><div><b>Teléfono / WhatsApp</b>Por confirmar</div></div>
+   <div class="row"><div><b>Correo</b>Por confirmar</div></div>
+  </div>
+  <form onsubmit="event.preventDefault();alert('Gracias por escribirnos. Este formulario estará activo pronto.')">
+   <h3>Envíanos un mensaje</h3>
+   <input placeholder="Nombre" required>
+   <input placeholder="Correo o teléfono" required>
+   <textarea rows="5" placeholder="Mensaje" required></textarea>
+   <button class="btn">Enviar</button>
+  </form>
+ </div>
+</section>
+
+<footer>
+ <img src="img/favicon.png?v=2" alt="EMICOH S.A.">
+ <p>© 2026 Empresa Minera Corazón de Huayna S.A. · Phara – Sandia – Puno</p>
+</footer>
+
+<script>
+const n=document.getElementById('nav');
+document.getElementById('menu').onclick=()=>n.classList.toggle('open');
+n.querySelectorAll('a').forEach(a=>a.onclick=()=>n.classList.remove('open'));
+</script>
+</body>
+</html>
