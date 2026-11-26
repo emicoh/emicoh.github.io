@@ -123,3 +123,4 @@ details.politica summary{cursor:pointer;font-weight:700}
 details.politica p,details.politica ul{margin-top:8px}
 details.politica ul{margin-left:18px}
 .estado-ok{color:var(--verde2);font-weight:700}
+@media(max-width:440px){.brand small{display:none}.brand img{height:36px}.usuario{gap:5px}.usuario .btn.chico{padding:6px 9px;font-size:.8rem}}
