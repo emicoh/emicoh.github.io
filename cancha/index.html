@@ -6,7 +6,7 @@
 <title>Reserva la Cancha Grass | EMICOH S.A.</title>
 <meta name="description" content="Separa tu turno en la cancha grass del sector Huayna, Phara. Paga con Yape, Plin o efectivo.">
 <link rel="icon" href="../img/favicon.png?v=2">
-<link rel="stylesheet" href="estilos.css?v=1">
+<link rel="stylesheet" href="estilos.css?v=2">
 </head>
 <body>
 
@@ -129,8 +129,8 @@
   <div class="pago-box"><div id="cfTexto"></div><div class="monto" id="cfMonto"></div></div>
   <label>¿Cómo vas a pagar?</label>
   <div class="metodos">
-   <button class="metodo yape" data-metodo="yape"><b>Yape</b><small>Al instante</small></button>
-   <button class="metodo plin" data-metodo="plin"><b>Plin</b><small>Al instante</small></button>
+   <button class="metodo yape" data-metodo="yape"><b>Yape</b><small>Verificación manual</small></button>
+   <button class="metodo plin" data-metodo="plin"><b>Plin</b><small>Verificación manual</small></button>
    <button class="metodo efectivo" data-metodo="efectivo"><b>Efectivo</b><small>En oficina</small></button>
   </div>
   <p class="nota" id="cfNota"></p>
@@ -148,7 +148,7 @@
 </div>
 
 <script type="module">
-import { sb, $, $$, esc, hoyLima, horaLima, fechaCorta, fechaLarga, hh, soles, horaDe, chipEstado, msgError, toast, abrirModal, cerrarModal, prepararImagen } from './comun.js?v=1';
+import { sb, $, $$, esc, hoyLima, horaLima, fechaCorta, fechaLarga, hh, soles, horaDe, chipEstado, msgError, toast, abrirModal, cerrarModal, prepararImagen } from './comun.js?v=2';
 
 let cfg = null, user = null, perfil = null;
 let fechaSel = hoyLima(), horaSel = null, metodoSel = null, ocupacion = {}, pendienteTrasLogin = false;
@@ -168,6 +168,8 @@ async function cargarConfig() {
   const av = $('#aviso');
   if (!cfg.abierto) { av.textContent = '⚠️ Las reservas en línea están cerradas por el momento.' + (cfg.aviso ? ' ' + cfg.aviso : ''); av.classList.remove('oculto'); }
   else if (cfg.aviso) { av.textContent = cfg.aviso; av.classList.remove('oculto'); }
+  $('[data-metodo=yape]').classList.toggle('oculto', !cfg.yape_numero);
+  $('[data-metodo=plin]').classList.toggle('oculto', !cfg.plin_numero);
   $('#duracion').innerHTML = Array.from({ length: cfg.max_horas_por_reserva }, (_, i) =>
     `<option value="${i + 1}">${i + 1} hora${i ? 's' : ''}</option>`).join('');
   pintarDias();
@@ -301,13 +303,9 @@ $('#fRegistro').onsubmit = e => {
   });
 };
 
-$('#lnkOlvide').onclick = async e => {
+$('#lnkOlvide').onclick = e => {
   e.preventDefault();
-  const email = $('#fLogin [name=email]').value.trim();
-  if (!email) return toast('Escribe tu correo arriba y vuelve a presionar', 'error');
-  const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo: location.origin + location.pathname });
-  if (error) return toast(msgError(error), 'error');
-  toast('Te enviamos un correo para cambiar tu contraseña.');
+  toast('Acércate o escribe a la administración' + (cfg?.whatsapp_admin ? ' (WhatsApp ' + cfg.whatsapp_admin + ')' : '') + ' con tu DNI. Eliminarán tu cuenta para que te registres de nuevo.');
 };
 
 $('#fReset').onsubmit = e => {
@@ -439,7 +437,7 @@ async function cargarMisReservas() {
     </div>`).join('');
   $$('[data-pagar]').forEach(b => b.onclick = () => abrirPago(+b.dataset.pagar));
   $$('[data-cancelar]').forEach(b => b.onclick = async () => {
-    if (!confirm('¿Seguro que quieres cancelar esta reserva?')) return;
+    if (!confirm('¿Seguro que quieres cancelar esta reserva? Si ya pagaste, la devolución se coordina con la administración.')) return;
     const { error } = await sb.rpc('cancelar_reserva', { p_id: +b.dataset.cancelar });
     if (error) return toast(msgError(error), 'error');
     toast('Reserva cancelada'); cargarMisReservas(); cargarOcupacion();

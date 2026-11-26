@@ -6,7 +6,7 @@
 <meta name="robots" content="noindex">
 <title>Administración – Cancha Grass | EMICOH S.A.</title>
 <link rel="icon" href="../img/favicon.png?v=2">
-<link rel="stylesheet" href="estilos.css?v=1">
+<link rel="stylesheet" href="estilos.css?v=2">
 </head>
 <body>
 <header>
@@ -124,7 +124,7 @@
 </div>
 
 <script type="module">
-import { sb, $, $$, esc, hoyLima, fechaLarga, hh, soles, horaDe, chipEstado, msgError, toast, abrirModal, cerrarModal } from './comun.js?v=1';
+import { sb, $, $$, esc, hoyLima, fechaLarga, hh, soles, horaDe, chipEstado, msgError, toast, abrirModal, cerrarModal } from './comun.js?v=2';
 
 let user = null, perfil = null;
 
@@ -245,7 +245,14 @@ async function cargarUsuarios() {
     <td>${u.bloqueado ? `<span class="chip rojo">Suspendido</span><br><span class="nota">${esc(u.motivo_bloqueo || '')}</span>` : '<span class="chip verde">Activo</span>'}</td>
     <td>${u.id === user.id ? '' : `
       <button class="btn chico ${u.bloqueado ? '' : 'rojo'}" data-susp="${u.id}" data-val="${!u.bloqueado}">${u.bloqueado ? 'Reactivar' : 'Suspender'}</button>
-      <button class="btn chico sec" data-rol="${u.id}" data-val="${u.rol === 'admin' ? 'usuario' : 'admin'}">${u.rol === 'admin' ? 'Quitar admin' : 'Hacer admin'}</button>`}</td></tr>`).join('') + '</table>';
+      <button class="btn chico sec" data-rol="${u.id}" data-val="${u.rol === 'admin' ? 'usuario' : 'admin'}">${u.rol === 'admin' ? 'Quitar admin' : 'Hacer admin'}</button>
+      ${u.rol === 'admin' ? '' : `<button class="btn chico sec" data-elim="${u.id}" title="Para quien olvidó su contraseña: podrá registrarse de nuevo con su DNI">Eliminar cuenta</button>`}`}</td></tr>`).join('') + '</table>';
+  $$('[data-elim]', c).forEach(b => b.onclick = async () => {
+    if (!confirm('¿Eliminar esta cuenta? Sus reservas pendientes se cancelan y la persona podrá registrarse de nuevo con su DNI. No se puede deshacer.')) return;
+    const { error } = await sb.rpc('admin_eliminar_cuenta', { p_usuario: b.dataset.elim });
+    if (error) return toast(msgError(error), 'error');
+    toast('Cuenta eliminada'); cargarUsuarios();
+  });
   $$('[data-susp]', c).forEach(b => b.onclick = async () => {
     const bloquear = b.dataset.val === 'true';
     const motivo = bloquear ? prompt('Motivo de la suspensión:', 'Incumplimiento del reglamento') : null;
