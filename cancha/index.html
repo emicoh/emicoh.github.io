@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reserva la Cancha Grass | EMICOH S.A.</title>
+<meta name="description" content="Separa tu turno en la cancha grass del sector Huayna, Phara. Paga con Yape, Plin o efectivo.">
+<link rel="icon" href="../img/favicon.png?v=2">
+<link rel="stylesheet" href="estilos.css?v=1">
+</head>
+<body>
+
+<header>
+ <div class="wrap">
+  <a class="brand" href="../"><img src="../img/favicon.png?v=2" alt="EMICOH S.A."><span>Cancha Grass<small>EMICOH S.A. · Sector Huayna</small></span></a>
+  <div class="usuario" id="zonaUsuario">
+   <button class="btn chico" id="btnIngresar">Ingresar</button>
+  </div>
+ </div>
+</header>
+
+<section class="hero">
+ <div class="wrap">
+  <h1 id="nombreCancha">Cancha Grass – Sector Huayna</h1>
+  <p>Separa tu turno en línea y paga con Yape, Plin o en efectivo.</p>
+  <div class="precios" id="precios"></div>
+ </div>
+</section>
+
+<main class="wrap">
+ <div class="panel">
+  <div id="aviso" class="aviso oculto"></div>
+  <h2>1. Elige el día</h2>
+  <div class="dias" id="dias"></div>
+  <h2 style="margin-top:18px">2. Elige la hora de inicio</h2>
+  <div class="leyenda">
+   <span><i style="background:#f2fbf4;border:1px solid #bfe8c9"></i>Libre</span>
+   <span><i style="background:#fff6e0;border:1px solid #f6dd9c"></i>Separado (esperando pago)</span>
+   <span><i style="background:#fde9e9;border:1px solid #f3c2c2"></i>Ocupado</span>
+   <span><i style="background:#eceff3;border:1px solid #d6dce3"></i>No disponible</span>
+  </div>
+  <div class="horas" id="horas"><div class="vacio">Cargando horarios…</div></div>
+  <div class="resumen">
+   <div>
+    <label for="duracion" style="margin-top:0">3. ¿Cuántas horas?</label>
+    <select id="duracion" style="width:auto;min-width:150px"></select>
+   </div>
+   <div style="text-align:right">
+    <div id="txtResumen" class="nota">Selecciona una hora libre</div>
+    <button class="btn" id="btnReservar" disabled>Separar cancha</button>
+   </div>
+  </div>
+ </div>
+
+ <div class="panel oculto" id="panelMis">
+  <h2>Mis reservas</h2>
+  <div class="lista" id="misReservas"></div>
+ </div>
+
+ <div class="panel">
+  <h2>🛡️ Seguridad y orden</h2>
+  <div class="seg">
+   <div><b>Solo usuarios registrados</b>Cada persona se registra con su DNI y celular. Un DNI solo puede tener una cuenta.</div>
+   <div><b>Pago verificado</b>La reserva se confirma solo cuando la administración verifica tu Yape, Plin o pago en efectivo.</div>
+   <div><b>Presenta tu DNI</b>El titular de la reserva debe estar presente en la cancha y mostrar su DNI si se lo piden.</div>
+   <div><b>Separaciones con tiempo límite</b>Si no pagas a tiempo, el horario se libera automáticamente para otra persona.</div>
+  </div>
+ </div>
+
+ <div class="panel">
+  <h2>📋 Reglamento de uso</h2>
+  <div class="regla" id="reglamento"></div>
+  <p class="nota" id="contactoAdmin"></p>
+ </div>
+</main>
+
+<footer>© 2026 Empresa Minera Corazón de Huayna S.A. · Phara – Sandia – Puno · <a href="../">Volver a la web</a></footer>
+
+<!-- MODAL: ingresar / registrarse -->
+<div class="modal" id="mAuth">
+ <div class="caja">
+  <button class="cerrar" data-cerrar="#mAuth" aria-label="Cerrar">×</button>
+  <h2>Tu cuenta</h2>
+  <p class="nota" id="authMotivo">Para separar la cancha necesitas iniciar sesión.</p>
+  <div class="tabs"><button class="act" data-tab="login">Ingresar</button><button data-tab="registro">Registrarme</button></div>
+
+  <form id="fLogin">
+   <label>Correo electrónico</label><input type="email" name="email" required autocomplete="email">
+   <label>Contraseña</label><input type="password" name="password" required autocomplete="current-password">
+   <button class="btn full" style="margin-top:16px">Ingresar</button>
+   <p class="nota" style="text-align:center"><a href="#" id="lnkOlvide">Olvidé mi contraseña</a></p>
+  </form>
+
+  <form id="fRegistro" class="oculto">
+   <div class="fila">
+    <div><label>Nombres</label><input name="nombres" required maxlength="80" autocomplete="given-name"></div>
+    <div><label>Apellidos</label><input name="apellidos" required maxlength="80" autocomplete="family-name"></div>
+   </div>
+   <div class="fila">
+    <div><label>DNI</label><input name="dni" required inputmode="numeric" pattern="\d{8}" maxlength="8" title="8 dígitos"></div>
+    <div><label>Celular</label><input name="celular" required inputmode="numeric" pattern="9\d{8}" maxlength="9" title="9 dígitos, empieza con 9" autocomplete="tel"></div>
+   </div>
+   <label>Correo electrónico</label><input type="email" name="email" required autocomplete="email">
+   <p class="nota">Usa un correo real: lo necesitarás si olvidas tu contraseña.</p>
+   <label>Contraseña (mínimo 8 caracteres)</label><input type="password" name="password" required minlength="8" autocomplete="new-password">
+   <label>Repite la contraseña</label><input type="password" name="password2" required minlength="8" autocomplete="new-password">
+   <label class="check"><input type="checkbox" name="acepto" required> Declaro que mis datos son reales y acepto el reglamento de uso de la cancha.</label>
+   <button class="btn full" style="margin-top:16px">Crear mi cuenta</button>
+  </form>
+ </div>
+</div>
+
+<!-- MODAL: nueva contraseña -->
+<div class="modal" id="mReset">
+ <div class="caja">
+  <h2>Nueva contraseña</h2>
+  <form id="fReset">
+   <label>Nueva contraseña</label><input type="password" name="password" required minlength="8" autocomplete="new-password">
+   <button class="btn full" style="margin-top:16px">Guardar</button>
+  </form>
+ </div>
+</div>
+
+<!-- MODAL: confirmar reserva -->
+<div class="modal" id="mConfirmar">
+ <div class="caja">
+  <button class="cerrar" data-cerrar="#mConfirmar" aria-label="Cerrar">×</button>
+  <h2>Confirmar separación</h2>
+  <div class="pago-box"><div id="cfTexto"></div><div class="monto" id="cfMonto"></div></div>
+  <label>¿Cómo vas a pagar?</label>
+  <div class="metodos">
+   <button class="metodo yape" data-metodo="yape"><b>Yape</b><small>Al instante</small></button>
+   <button class="metodo plin" data-metodo="plin"><b>Plin</b><small>Al instante</small></button>
+   <button class="metodo efectivo" data-metodo="efectivo"><b>Efectivo</b><small>En oficina</small></button>
+  </div>
+  <p class="nota" id="cfNota"></p>
+  <button class="btn full" id="btnConfirmar" style="margin-top:14px" disabled>Separar y pagar</button>
+ </div>
+</div>
+
+<!-- MODAL: pago -->
+<div class="modal" id="mPago">
+ <div class="caja">
+  <button class="cerrar" data-cerrar="#mPago" aria-label="Cerrar">×</button>
+  <h2 id="pgTitulo">Paga tu reserva</h2>
+  <div id="pgContenido"></div>
+ </div>
+</div>
+
+<script type="module">
+import { sb, $, $$, esc, hoyLima, horaLima, fechaCorta, fechaLarga, hh, soles, horaDe, chipEstado, msgError, toast, abrirModal, cerrarModal, prepararImagen } from './comun.js?v=1';
+
+let cfg = null, user = null, perfil = null;
+let fechaSel = hoyLima(), horaSel = null, metodoSel = null, ocupacion = {}, pendienteTrasLogin = false;
+let reloj = null;
+
+// ---------- carga inicial ----------
+async function cargarConfig() {
+  const { data, error } = await sb.from('config').select('*').eq('id', 1).single();
+  if (error) { toast('No se pudo cargar la información. Recarga la página.', 'error'); return; }
+  cfg = data;
+  $('#nombreCancha').textContent = cfg.nombre_cancha;
+  $('#precios').innerHTML =
+    `<span>☀️ Día (${hh(cfg.hora_apertura)}–${hh(cfg.hora_inicio_noche)}): <b>${soles(cfg.precio_dia)}</b>/hora</span>` +
+    `<span>🌙 Noche (${hh(cfg.hora_inicio_noche)}–${hh(cfg.hora_cierre)}): <b>${soles(cfg.precio_noche)}</b>/hora</span>`;
+  $('#reglamento').textContent = cfg.reglamento || '';
+  $('#contactoAdmin').textContent = cfg.whatsapp_admin ? 'Consultas: WhatsApp ' + cfg.whatsapp_admin : '';
+  const av = $('#aviso');
+  if (!cfg.abierto) { av.textContent = '⚠️ Las reservas en línea están cerradas por el momento.' + (cfg.aviso ? ' ' + cfg.aviso : ''); av.classList.remove('oculto'); }
+  else if (cfg.aviso) { av.textContent = cfg.aviso; av.classList.remove('oculto'); }
+  $('#duracion').innerHTML = Array.from({ length: cfg.max_horas_por_reserva }, (_, i) =>
+    `<option value="${i + 1}">${i + 1} hora${i ? 's' : ''}</option>`).join('');
+  pintarDias();
+}
+
+function pintarDias() {
+  const cont = $('#dias'); cont.innerHTML = '';
+  for (let i = 0; i <= cfg.dias_anticipacion; i++) {
+    const iso = hoyLima(i), f = fechaCorta(iso);
+    const b = document.createElement('button');
+    b.className = 'dia' + (iso === fechaSel ? ' sel' : '');
+    b.innerHTML = `<small>${i === 0 ? 'Hoy' : i === 1 ? 'Mañana' : f.dia}</small><b>${f.num}</b><small>${f.mes}</small>`;
+    b.onclick = () => { fechaSel = iso; horaSel = null; $$('.dia').forEach(x => x.classList.remove('sel')); b.classList.add('sel'); pintarHoras(); actualizarResumen(); };
+    cont.appendChild(b);
+  }
+}
+
+async function cargarOcupacion() {
+  const { data, error } = await sb.rpc('disponibilidad', { p_desde: hoyLima(), p_hasta: hoyLima(cfg.dias_anticipacion) });
+  if (error) { toast(msgError(error), 'error'); return; }
+  ocupacion = {};
+  for (const r of data) for (let h = r.hora_inicio; h < r.hora_inicio + r.horas; h++) {
+    const k = r.fecha + '|' + h, peso = { bloqueado: 3, ocupado: 2, separado: 1 };
+    if (!ocupacion[k] || peso[r.estado] > peso[ocupacion[k]]) ocupacion[k] = r.estado;
+  }
+  pintarHoras();
+}
+
+function estadoHora(fecha, h) {
+  if (fecha === hoyLima() && h <= horaLima() + 0.5) return 'pasado';
+  return ocupacion[fecha + '|' + h] || 'libre';
+}
+
+function pintarHoras() {
+  const cont = $('#horas'); cont.innerHTML = '';
+  for (let h = cfg.hora_apertura; h < cfg.hora_cierre; h++) {
+    const est = estadoHora(fechaSel, h);
+    const precio = h >= cfg.hora_inicio_noche ? cfg.precio_noche : cfg.precio_dia;
+    const b = document.createElement('button');
+    const dur = +$('#duracion').value || 1;
+    const enSel = horaSel !== null && h >= horaSel && h < horaSel + dur;
+    b.className = 'hora ' + est + (enSel ? ' sel' : '');
+    b.disabled = est !== 'libre' || !cfg.abierto;
+    const etiqueta = { libre: soles(precio), separado: 'Separado', ocupado: 'Ocupado', bloqueado: 'No disponible', pasado: 'Pasó' }[est];
+    b.innerHTML = `<b>${hh(h)}</b><small>${etiqueta}</small>`;
+    b.onclick = () => { horaSel = h; pintarHoras(); actualizarResumen(); };
+    cont.appendChild(b);
+  }
+}
+
+function calcular() {
+  if (horaSel === null) return null;
+  const dur = +$('#duracion').value;
+  if (horaSel + dur > cfg.hora_cierre) return { error: 'Supera la hora de cierre (' + hh(cfg.hora_cierre) + ')' };
+  let monto = 0;
+  for (let h = horaSel; h < horaSel + dur; h++) {
+    if (estadoHora(fechaSel, h) !== 'libre') return { error: 'Las ' + hh(h) + ' no están libres. Elige menos horas u otro horario.' };
+    monto += +(h >= cfg.hora_inicio_noche ? cfg.precio_noche : cfg.precio_dia);
+  }
+  return { dur, monto };
+}
+
+function actualizarResumen() {
+  const c = calcular(), btn = $('#btnReservar'), t = $('#txtResumen');
+  if (!c) { t.textContent = 'Selecciona una hora libre'; btn.disabled = true; return; }
+  if (c.error) { t.textContent = c.error; t.style.color = 'var(--rojo)'; btn.disabled = true; return; }
+  t.style.color = '';
+  t.innerHTML = `${esc(fechaLarga(fechaSel))} · ${hh(horaSel)} a ${hh(horaSel + c.dur)} · <b>${soles(c.monto)}</b>`;
+  btn.disabled = !cfg.abierto;
+}
+$('#duracion').onchange = () => { pintarHoras(); actualizarResumen(); };
+
+// ---------- sesión ----------
+async function cargarPerfil() {
+  const { data: { session } } = await sb.auth.getSession();
+  user = session?.user || null;
+  perfil = null;
+  if (user) {
+    const { data } = await sb.from('perfiles').select('*').eq('id', user.id).maybeSingle();
+    perfil = data;
+  }
+  pintarUsuario();
+  if (user) cargarMisReservas(); else $('#panelMis').classList.add('oculto');
+}
+
+function pintarUsuario() {
+  const z = $('#zonaUsuario');
+  if (!user) { z.innerHTML = '<button class="btn chico" id="btnIngresar">Ingresar</button>'; $('#btnIngresar').onclick = () => abrirAuth(); return; }
+  const nombre = perfil ? perfil.nombres.split(' ')[0] : 'Usuario';
+  z.innerHTML = `<span>Hola, <b>${esc(nombre)}</b></span>` +
+    (perfil?.rol === 'admin' ? '<a class="btn chico azul" href="admin.html">Panel admin</a>' : '') +
+    '<button class="btn chico sec" id="btnSalir">Salir</button>';
+  $('#btnSalir').onclick = async () => { await sb.auth.signOut(); toast('Sesión cerrada'); };
+}
+
+function abrirAuth(motivo) {
+  $('#authMotivo').textContent = motivo || 'Ingresa o crea tu cuenta para separar la cancha.';
+  abrirModal('#mAuth');
+}
+$$('[data-tab]').forEach(b => b.onclick = () => {
+  $$('[data-tab]').forEach(x => x.classList.toggle('act', x === b));
+  $('#fLogin').classList.toggle('oculto', b.dataset.tab !== 'login');
+  $('#fRegistro').classList.toggle('oculto', b.dataset.tab !== 'registro');
+});
+
+async function enviando(form, fn) {
+  form.classList.add('cargando');
+  try { await fn(); } catch (e) { toast(msgError(e), 'error'); } finally { form.classList.remove('cargando'); }
+}
+
+$('#fLogin').onsubmit = e => {
+  e.preventDefault(); const f = new FormData(e.target);
+  enviando(e.target, async () => {
+    const { error } = await sb.auth.signInWithPassword({ email: f.get('email').trim(), password: f.get('password') });
+    if (error) throw error;
+    cerrarModal('#mAuth'); e.target.reset(); toast('¡Bienvenido!');
+  });
+};
+
+$('#fRegistro').onsubmit = e => {
+  e.preventDefault(); const f = new FormData(e.target);
+  if (f.get('password') !== f.get('password2')) return toast('Las contraseñas no coinciden', 'error');
+  enviando(e.target, async () => {
+    const { data, error } = await sb.auth.signUp({
+      email: f.get('email').trim(), password: f.get('password'),
+      options: { data: { dni: f.get('dni').trim(), nombres: f.get('nombres').trim(), apellidos: f.get('apellidos').trim(), celular: f.get('celular').trim() } }
+    });
+    if (error) throw error;
+    if (!data.session) { toast('Cuenta creada. Ahora inicia sesión.'); $('[data-tab=login]').click(); return; }
+    cerrarModal('#mAuth'); e.target.reset(); toast('¡Cuenta creada! Ya puedes separar la cancha.');
+  });
+};
+
+$('#lnkOlvide').onclick = async e => {
+  e.preventDefault();
+  const email = $('#fLogin [name=email]').value.trim();
+  if (!email) return toast('Escribe tu correo arriba y vuelve a presionar', 'error');
+  const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo: location.origin + location.pathname });
+  if (error) return toast(msgError(error), 'error');
+  toast('Te enviamos un correo para cambiar tu contraseña.');
+};
+
+$('#fReset').onsubmit = e => {
+  e.preventDefault(); const f = new FormData(e.target);
+  enviando(e.target, async () => {
+    const { error } = await sb.auth.updateUser({ password: f.get('password') });
+    if (error) throw error;
+    cerrarModal('#mReset'); toast('Contraseña actualizada');
+  });
+};
+
+sb.auth.onAuthStateChange((ev) => {
+  if (ev === 'PASSWORD_RECOVERY') abrirModal('#mReset');
+  setTimeout(async () => {
+    await cargarPerfil();
+    if (pendienteTrasLogin && user) { pendienteTrasLogin = false; abrirConfirmar(); }
+  }, 0);
+});
+
+// ---------- reservar ----------
+$('#btnReservar').onclick = () => {
+  if (!user) { pendienteTrasLogin = true; return abrirAuth('Para separar la cancha necesitas iniciar sesión o registrarte. Es rápido.'); }
+  abrirConfirmar();
+};
+
+function abrirConfirmar() {
+  const c = calcular(); if (!c || c.error) return;
+  if (perfil?.bloqueado) return toast('Tu cuenta está suspendida. Comunícate con la administración.', 'error');
+  metodoSel = null; $$('.metodo').forEach(m => m.classList.remove('sel'));
+  $('#btnConfirmar').disabled = true; $('#cfNota').textContent = '';
+  $('#cfTexto').textContent = `${fechaLarga(fechaSel)} · ${hh(horaSel)} a ${hh(horaSel + c.dur)}`;
+  $('#cfMonto').textContent = soles(c.monto);
+  abrirModal('#mConfirmar');
+}
+$$('.metodo').forEach(m => m.onclick = () => {
+  metodoSel = m.dataset.metodo;
+  $$('.metodo').forEach(x => x.classList.toggle('sel', x === m));
+  $('#cfNota').textContent = metodoSel === 'efectivo'
+    ? `Tendrás hasta ${cfg.horas_para_pagar_efectivo} h (o hasta 1 h antes del partido) para pagar en: ${cfg.lugar_pago_efectivo}. Si no pagas, se libera el horario.`
+    : `Tendrás ${cfg.minutos_para_pagar} minutos para pagar y enviar tu número de operación con la captura. Si no, se libera el horario.`;
+  $('#btnConfirmar').disabled = false;
+});
+$('#btnConfirmar').onclick = async () => {
+  const c = calcular(); const btn = $('#btnConfirmar'); btn.disabled = true;
+  const { data: id, error } = await sb.rpc('crear_reserva', { p_fecha: fechaSel, p_hora: horaSel, p_horas: c.dur, p_metodo: metodoSel });
+  btn.disabled = false;
+  if (error) { toast(msgError(error), 'error'); cargarOcupacion(); return; }
+  cerrarModal('#mConfirmar'); horaSel = null; actualizarResumen();
+  await cargarOcupacion(); await cargarMisReservas();
+  abrirPago(id);
+};
+
+// ---------- pago ----------
+async function abrirPago(id) {
+  const { data: r, error } = await sb.from('reservas').select('*').eq('id', id).single();
+  if (error) return toast(msgError(error), 'error');
+  clearInterval(reloj);
+  const cont = $('#pgContenido');
+  const cab = `<div class="pago-box"><div>${esc(fechaLarga(r.fecha))} · ${hh(r.hora_inicio)} a ${hh(r.hora_inicio + r.horas)}</div><div class="monto">${soles(r.monto)}</div>${chipEstado(r.estado)}</div>`;
+  if (r.metodo === 'efectivo') {
+    $('#pgTitulo').textContent = 'Pago en efectivo';
+    cont.innerHTML = cab + `<p>Acércate a pagar <b>${soles(r.monto)}</b> en:</p><p><b>${esc(cfg.lugar_pago_efectivo)}</b></p>
+      <p class="nota">Plazo: hasta el <b>${esc(horaDe(r.vence_en))}</b>. Si no pagas antes, el horario se libera.<br>Lleva tu DNI. Al pagar, la administración confirmará tu reserva.</p>
+      <button class="btn full" style="margin-top:14px" data-cerrar="#mPago">Entendido</button>`;
+  } else {
+    const esYape = r.metodo === 'yape';
+    const num = esYape ? cfg.yape_numero : cfg.plin_numero, tit = esYape ? cfg.yape_titular : cfg.plin_titular;
+    $('#pgTitulo').textContent = 'Paga con ' + (esYape ? 'Yape' : 'Plin');
+    cont.innerHTML = cab + `
+      <div class="pago-box"><div class="nota">Envía exactamente <b>${soles(r.monto)}</b> al número</div>
+        <div class="num">${esc(num || 'Por configurar')}</div><div>${esc(tit || '')}</div>
+        ${num ? `<button class="btn chico sec" id="btnCopiar" style="margin-top:8px">Copiar número</button>` : ''}</div>
+      <p class="nota">Tiempo para pagar: <span class="cuenta" id="cuenta"></span></p>
+      <form id="fPago">
+        <label>Número de operación (aparece en tu ${esYape ? 'Yape' : 'Plin'})</label>
+        <input name="nro" required inputmode="numeric" pattern="\\d{4,20}" placeholder="Ej. 12345678">
+        <label>Captura del pago</label>
+        <input name="foto" type="file" accept="image/*" required>
+        <button class="btn full" style="margin-top:16px">Enviar comprobante</button>
+        <p class="nota">La administración verificará tu pago y confirmará la reserva. Recibirás el estado en "Mis reservas".</p>
+      </form>`;
+    if (num) $('#btnCopiar').onclick = e => { e.preventDefault(); navigator.clipboard?.writeText(num); toast('Número copiado'); };
+    const fin = new Date(r.vence_en).getTime();
+    const tick = () => {
+      const s = Math.max(0, Math.floor((fin - Date.now()) / 1000));
+      const el = $('#cuenta'); if (!el) return clearInterval(reloj);
+      el.textContent = s ? `${Math.floor(s / 60)} min ${String(s % 60).padStart(2, '0')} s` : 'Vencido';
+      if (!s) clearInterval(reloj);
+    };
+    tick(); reloj = setInterval(tick, 1000);
+    $('#fPago').onsubmit = e => {
+      e.preventDefault(); const f = new FormData(e.target);
+      enviando(e.target, async () => {
+        const img = await prepararImagen(f.get('foto'));
+        const ruta = `${user.id}/reserva-${r.id}-${Date.now()}.${img.ext}`;
+        const up = await sb.storage.from('comprobantes').upload(ruta, img.blob, { contentType: img.type, upsert: false });
+        if (up.error) throw up.error;
+        const { error } = await sb.rpc('enviar_pago', { p_id: r.id, p_nro_operacion: f.get('nro'), p_comprobante: ruta });
+        if (error) throw error;
+        clearInterval(reloj); cerrarModal('#mPago');
+        toast('¡Comprobante enviado! Te confirmaremos pronto.');
+        cargarMisReservas(); cargarOcupacion();
+      });
+    };
+  }
+  abrirModal('#mPago');
+}
+
+// ---------- mis reservas ----------
+async function cargarMisReservas() {
+  if (!user) return;
+  const { data, error } = await sb.from('reservas').select('*').eq('usuario_id', user.id).eq('tipo', 'reserva')
+    .order('fecha', { ascending: false }).order('hora_inicio', { ascending: false }).limit(30);
+  if (error) return;
+  $('#panelMis').classList.remove('oculto');
+  const cont = $('#misReservas');
+  if (!data.length) { cont.innerHTML = '<div class="vacio">Aún no tienes reservas.</div>'; return; }
+  cont.innerHTML = data.map(r => `
+    <div class="item">
+      <div class="top"><div><b>${esc(fechaLarga(r.fecha))}</b> · ${hh(r.hora_inicio)} a ${hh(r.hora_inicio + r.horas)}<br>
+        <span class="nota">${soles(r.monto)} · ${esc((r.metodo || '').toUpperCase())}${r.nro_operacion ? ' · Op. ' + esc(r.nro_operacion) : ''}</span></div>
+        ${chipEstado(r.estado)}</div>
+      ${r.nota_admin ? `<p class="nota">Nota de administración: ${esc(r.nota_admin)}</p>` : ''}
+      ${r.estado === 'pendiente_pago' && r.vence_en ? `<p class="nota">Paga antes de: <b>${esc(horaDe(r.vence_en))}</b></p>` : ''}
+      <div class="acciones">
+        ${r.estado === 'pendiente_pago' ? `<button class="btn chico" data-pagar="${r.id}">${r.metodo === 'efectivo' ? 'Ver dónde pagar' : 'Pagar ahora'}</button>` : ''}
+        ${['pendiente_pago', 'por_verificar', 'confirmada'].includes(r.estado) ? `<button class="btn chico sec" data-cancelar="${r.id}">Cancelar</button>` : ''}
+      </div>
+    </div>`).join('');
+  $$('[data-pagar]').forEach(b => b.onclick = () => abrirPago(+b.dataset.pagar));
+  $$('[data-cancelar]').forEach(b => b.onclick = async () => {
+    if (!confirm('¿Seguro que quieres cancelar esta reserva?')) return;
+    const { error } = await sb.rpc('cancelar_reserva', { p_id: +b.dataset.cancelar });
+    if (error) return toast(msgError(error), 'error');
+    toast('Reserva cancelada'); cargarMisReservas(); cargarOcupacion();
+  });
+}
+
+// ---------- general ----------
+document.addEventListener('click', e => {
+  const c = e.target.closest('[data-cerrar]'); if (c) { e.preventDefault(); cerrarModal(c.dataset.cerrar); clearInterval(reloj); }
+});
+$$('.modal').forEach(m => m.addEventListener('click', e => { if (e.target === m && m.id !== 'mReset') { cerrarModal('#' + m.id); clearInterval(reloj); } }));
+
+await cargarConfig();
+await cargarOcupacion();
+setInterval(cargarOcupacion, 60000);
+</script>
+</body>
+</html>

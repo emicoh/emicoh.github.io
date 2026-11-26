@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Administración – Cancha Grass | EMICOH S.A.</title>
+<link rel="icon" href="../img/favicon.png?v=2">
+<link rel="stylesheet" href="estilos.css?v=1">
+</head>
+<body>
+<header>
+ <div class="wrap">
+  <a class="brand" href="./"><img src="../img/favicon.png?v=2" alt="EMICOH S.A."><span>Administración<small>Cancha Grass · EMICOH S.A.</small></span></a>
+  <div class="usuario" id="zonaUsuario"></div>
+ </div>
+</header>
+
+<main class="wrap" style="padding-top:20px">
+ <div id="sinAcceso" class="panel oculto" style="margin-top:0">
+  <h2>Acceso restringido</h2>
+  <p>Esta sección es solo para administradores. <a href="./">Volver a reservas</a></p>
+ </div>
+
+ <div id="app" class="oculto">
+  <div class="tabs" id="tabsAdmin" style="margin-top:0">
+   <button class="act" data-sec="verificar">Por verificar <span id="nPend"></span></button>
+   <button data-sec="agenda">Agenda</button>
+   <button data-sec="usuarios">Usuarios</button>
+   <button data-sec="config">Configuración</button>
+  </div>
+
+  <!-- POR VERIFICAR -->
+  <section class="panel sec" id="sec-verificar" style="margin-top:12px">
+   <h2>Pagos por verificar</h2>
+   <p class="nota">Revisa en tu app de Yape/Plin que el número de operación y el monto coincidan antes de confirmar. Las reservas en efectivo se confirman cuando la persona paga en oficina.</p>
+   <div class="lista" id="listaPend" style="margin-top:12px"></div>
+  </section>
+
+  <!-- AGENDA -->
+  <section class="panel sec oculto" id="sec-agenda" style="margin-top:12px">
+   <h2>Agenda</h2>
+   <div class="fila">
+    <div><label>Desde</label><input type="date" id="agDesde"></div>
+    <div><label>Hasta</label><input type="date" id="agHasta"></div>
+   </div>
+   <button class="btn chico" id="btnAgenda" style="margin-top:10px">Ver</button>
+   <div id="tablaAgenda" style="margin-top:14px;overflow-x:auto"></div>
+   <h3 style="margin-top:22px">Bloquear horario (mantenimiento, campeonato, evento)</h3>
+   <form id="fBloqueo">
+    <div class="fila">
+     <div><label>Fecha</label><input type="date" name="fecha" required></div>
+     <div><label>Hora inicio</label><select name="hora" id="blHora"></select></div>
+    </div>
+    <div class="fila">
+     <div><label>Horas</label><input type="number" name="horas" min="1" max="17" value="1" required></div>
+     <div><label>Motivo</label><input name="motivo" placeholder="Ej. Mantenimiento" required></div>
+    </div>
+    <button class="btn chico" style="margin-top:12px">Bloquear</button>
+   </form>
+  </section>
+
+  <!-- USUARIOS -->
+  <section class="panel sec oculto" id="sec-usuarios" style="margin-top:12px">
+   <h2>Usuarios registrados</h2>
+   <div class="fila"><input id="buscar" placeholder="Buscar por DNI o nombre"><button class="btn chico" id="btnBuscar">Buscar</button></div>
+   <div id="tablaUsuarios" style="margin-top:14px;overflow-x:auto"></div>
+  </section>
+
+  <!-- CONFIG -->
+  <section class="panel sec oculto" id="sec-config" style="margin-top:12px">
+   <h2>Configuración</h2>
+   <form id="fConfig">
+    <label class="check"><input type="checkbox" name="abierto"> Reservas en línea abiertas</label>
+    <label>Nombre de la cancha</label><input name="nombre_cancha">
+    <label>Aviso en la página (opcional)</label><input name="aviso" placeholder="Ej. El sábado 6 la cancha estará cerrada por campeonato">
+    <h3 style="margin-top:18px">Horario y precios</h3>
+    <div class="fila">
+     <div><label>Hora de apertura</label><input type="number" name="hora_apertura" min="0" max="23"></div>
+     <div><label>Hora de cierre</label><input type="number" name="hora_cierre" min="1" max="24"></div>
+    </div>
+    <div class="fila">
+     <div><label>Precio día (S/ por hora)</label><input type="number" step="0.5" name="precio_dia"></div>
+     <div><label>Precio noche (S/ por hora)</label><input type="number" step="0.5" name="precio_noche"></div>
+    </div>
+    <label>La tarifa noche empieza a las (hora)</label><input type="number" name="hora_inicio_noche" min="0" max="24">
+    <h3 style="margin-top:18px">Reglas de reserva</h3>
+    <div class="fila">
+     <div><label>Máx. horas por reserva</label><input type="number" name="max_horas_por_reserva" min="1" max="6"></div>
+     <div><label>Máx. reservas activas por persona</label><input type="number" name="max_reservas_activas" min="1" max="10"></div>
+    </div>
+    <div class="fila">
+     <div><label>Días de anticipación</label><input type="number" name="dias_anticipacion" min="1" max="90"></div>
+     <div><label>Minutos para pagar (Yape/Plin)</label><input type="number" name="minutos_para_pagar" min="5" max="240"></div>
+    </div>
+    <div class="fila">
+     <div><label>Horas para pagar en efectivo</label><input type="number" name="horas_para_pagar_efectivo" min="1" max="168"></div>
+     <div><label>Cancelar hasta (horas antes)</label><input type="number" name="horas_minimas_cancelar" min="0" max="72"></div>
+    </div>
+    <h3 style="margin-top:18px">Medios de pago</h3>
+    <div class="fila">
+     <div><label>Número Yape</label><input name="yape_numero" inputmode="numeric"></div>
+     <div><label>Titular Yape</label><input name="yape_titular"></div>
+    </div>
+    <div class="fila">
+     <div><label>Número Plin</label><input name="plin_numero" inputmode="numeric"></div>
+     <div><label>Titular Plin</label><input name="plin_titular"></div>
+    </div>
+    <label>Lugar de pago en efectivo</label><input name="lugar_pago_efectivo">
+    <label>WhatsApp de consultas</label><input name="whatsapp_admin" inputmode="numeric">
+    <label>Reglamento</label><textarea name="reglamento" rows="10"></textarea>
+    <button class="btn" style="margin-top:16px">Guardar configuración</button>
+   </form>
+  </section>
+ </div>
+</main>
+
+<div class="modal" id="mComp">
+ <div class="caja">
+  <button class="cerrar" data-cerrar="#mComp" aria-label="Cerrar">×</button>
+  <h2>Comprobante</h2>
+  <div id="compCont"></div>
+ </div>
+</div>
+
+<script type="module">
+import { sb, $, $$, esc, hoyLima, fechaLarga, hh, soles, horaDe, chipEstado, msgError, toast, abrirModal, cerrarModal } from './comun.js?v=1';
+
+let user = null, perfil = null;
+
+async function iniciar() {
+  const { data: { session } } = await sb.auth.getSession();
+  user = session?.user;
+  if (!user) { location.href = './'; return; }
+  const { data } = await sb.from('perfiles').select('*').eq('id', user.id).maybeSingle();
+  perfil = data;
+  $('#zonaUsuario').innerHTML = `<span>${esc(perfil?.nombres || '')}</span><a class="btn chico sec" href="./">Ver reservas</a><button class="btn chico sec" id="btnSalir">Salir</button>`;
+  $('#btnSalir').onclick = async () => { await sb.auth.signOut(); location.href = './'; };
+  if (perfil?.rol !== 'admin' || perfil?.bloqueado) { $('#sinAcceso').classList.remove('oculto'); return; }
+  $('#app').classList.remove('oculto');
+  $('#agDesde').value = hoyLima(); $('#agHasta').value = hoyLima(7);
+  $('#fBloqueo [name=fecha]').value = hoyLima(1);
+  $('#blHora').innerHTML = Array.from({ length: 24 }, (_, h) => `<option value="${h}">${hh(h)}</option>`).join('');
+  $('#blHora').value = 8;
+  cargarPendientes();
+  setInterval(cargarPendientes, 60000);
+}
+
+$$('#tabsAdmin button').forEach(b => b.onclick = () => {
+  $$('#tabsAdmin button').forEach(x => x.classList.toggle('act', x === b));
+  $$('.sec').forEach(s => s.classList.toggle('oculto', s.id !== 'sec-' + b.dataset.sec));
+  ({ verificar: cargarPendientes, agenda: cargarAgenda, usuarios: cargarUsuarios, config: cargarConfig })[b.dataset.sec]();
+});
+
+// ---------- por verificar ----------
+async function cargarPendientes() {
+  const { data, error } = await sb.rpc('admin_pendientes');
+  if (error) return toast(msgError(error), 'error');
+  $('#nPend').textContent = data.length ? `(${data.length})` : '';
+  const c = $('#listaPend');
+  if (!data.length) { c.innerHTML = '<div class="vacio">No hay pagos pendientes de verificar. 👍</div>'; return; }
+  c.innerHTML = data.map(r => `
+    <div class="item">
+      <div class="top"><div><b>${esc(fechaLarga(r.fecha))} · ${hh(r.hora_inicio)} a ${hh(r.hora_inicio + r.horas)}</b><br>
+        ${esc(r.nombre)} · DNI ${esc(r.dni)} · Cel. ${esc(r.celular)}</div>${chipEstado(r.estado)}</div>
+      <p style="margin-top:6px"><b>${soles(r.monto)}</b> por <b>${esc(r.metodo.toUpperCase())}</b>
+        ${r.nro_operacion ? ` · N.° operación: <b>${esc(r.nro_operacion)}</b>` : ''}
+        ${r.estado === 'pendiente_pago' ? `<br><span class="nota">Debe pagar en oficina antes de ${esc(horaDe(r.vence_en))}</span>` : ''}</p>
+      <div class="acciones">
+        ${r.comprobante_path ? `<button class="btn chico sec" data-ver="${esc(r.comprobante_path)}">Ver captura</button>` : ''}
+        <button class="btn chico" data-conf="${r.id}">${r.metodo === 'efectivo' ? 'Recibí el efectivo' : 'Pago correcto · Confirmar'}</button>
+        <button class="btn chico rojo" data-rech="${r.id}">Rechazar</button>
+        <a class="btn chico sec" href="https://wa.me/51${esc(r.celular)}" target="_blank" rel="noopener">WhatsApp</a>
+      </div>
+    </div>`).join('');
+  enlazarAcciones(c, cargarPendientes);
+}
+
+function enlazarAcciones(c, recargar) {
+  $$('[data-ver]', c).forEach(b => b.onclick = () => verComprobante(b.dataset.ver));
+  $$('[data-conf]', c).forEach(b => b.onclick = async () => {
+    const nota = prompt('Nota (opcional), por ejemplo "Yape verificado":', '') ?? null;
+    if (nota === null) return;
+    const { error } = await sb.rpc('admin_confirmar', { p_id: +b.dataset.conf, p_nota: nota || null });
+    if (error) return toast(msgError(error), 'error');
+    toast('Reserva confirmada'); recargar();
+  });
+  $$('[data-rech]', c).forEach(b => b.onclick = async () => {
+    const nota = prompt('Motivo del rechazo (la persona lo verá):', 'No se encontró el pago');
+    if (!nota) return;
+    const { error } = await sb.rpc('admin_rechazar', { p_id: +b.dataset.rech, p_nota: nota });
+    if (error) return toast(msgError(error), 'error');
+    toast('Reserva rechazada'); recargar();
+  });
+  $$('[data-desbloq]', c).forEach(b => b.onclick = async () => {
+    if (!confirm('¿Quitar este bloqueo?')) return;
+    const { error } = await sb.rpc('admin_quitar_bloqueo', { p_id: +b.dataset.desbloq });
+    if (error) return toast(msgError(error), 'error');
+    toast('Bloqueo quitado'); recargar();
+  });
+}
+
+async function verComprobante(ruta) {
+  const { data, error } = await sb.storage.from('comprobantes').createSignedUrl(ruta, 300);
+  if (error) return toast(msgError(error), 'error');
+  $('#compCont').innerHTML = `<img class="comp" src="${esc(data.signedUrl)}" alt="Comprobante"><p class="nota">Enlace válido por 5 minutos.</p>`;
+  abrirModal('#mComp');
+}
+
+// ---------- agenda ----------
+async function cargarAgenda() {
+  const { data, error } = await sb.rpc('admin_reservas', { p_desde: $('#agDesde').value, p_hasta: $('#agHasta').value });
+  if (error) return toast(msgError(error), 'error');
+  const c = $('#tablaAgenda');
+  if (!data.length) { c.innerHTML = '<div class="vacio">Sin reservas en esas fechas.</div>'; return; }
+  c.innerHTML = `<table><tr><th>Fecha</th><th>Hora</th><th>Quién</th><th>Pago</th><th>Estado</th><th></th></tr>` + data.map(r => `
+    <tr><td>${esc(fechaLarga(r.fecha))}</td><td>${hh(r.hora_inicio)}–${hh(r.hora_inicio + r.horas)}</td>
+    <td>${r.tipo === 'bloqueo' ? `<b>BLOQUEO</b>: ${esc(r.motivo)}` : `${esc(r.nombre)}<br><span class="nota">DNI ${esc(r.dni)} · ${esc(r.celular)}</span>`}</td>
+    <td>${r.tipo === 'bloqueo' ? '' : `${soles(r.monto)} ${esc((r.metodo || '').toUpperCase())}${r.nro_operacion ? '<br><span class="nota">Op. ' + esc(r.nro_operacion) + '</span>' : ''}`}</td>
+    <td>${chipEstado(r.estado)}${r.nota_admin ? `<br><span class="nota">${esc(r.nota_admin)}</span>` : ''}</td>
+    <td>${r.tipo === 'bloqueo' && r.estado === 'confirmada' ? `<button class="btn chico sec" data-desbloq="${r.id}">Quitar</button>` : ''}
+        ${r.comprobante_path ? `<button class="btn chico sec" data-ver="${esc(r.comprobante_path)}">Captura</button>` : ''}
+        ${r.tipo === 'reserva' && ['pendiente_pago', 'por_verificar'].includes(r.estado) ? `<button class="btn chico" data-conf="${r.id}">Confirmar</button>` : ''}
+        ${r.tipo === 'reserva' && ['pendiente_pago', 'por_verificar', 'confirmada'].includes(r.estado) ? `<button class="btn chico rojo" data-rech="${r.id}">Anular</button>` : ''}</td></tr>`).join('') + '</table>';
+  enlazarAcciones(c, cargarAgenda);
+}
+$('#btnAgenda').onclick = cargarAgenda;
+
+$('#fBloqueo').onsubmit = async e => {
+  e.preventDefault(); const f = new FormData(e.target);
+  const { error } = await sb.rpc('admin_bloquear_horario', { p_fecha: f.get('fecha'), p_hora: +f.get('hora'), p_horas: +f.get('horas'), p_motivo: f.get('motivo') });
+  if (error) return toast(msgError(error), 'error');
+  toast('Horario bloqueado'); cargarAgenda();
+};
+
+// ---------- usuarios ----------
+async function cargarUsuarios() {
+  const { data, error } = await sb.rpc('admin_usuarios', { p_buscar: $('#buscar').value.trim() });
+  if (error) return toast(msgError(error), 'error');
+  const c = $('#tablaUsuarios');
+  if (!data.length) { c.innerHTML = '<div class="vacio">Sin resultados.</div>'; return; }
+  c.innerHTML = `<table><tr><th>Nombre</th><th>DNI</th><th>Contacto</th><th>Reservas</th><th>Estado</th><th></th></tr>` + data.map(u => `
+    <tr><td>${esc(u.nombre)}${u.rol === 'admin' ? ' <span class="chip azul">ADMIN</span>' : ''}</td><td>${esc(u.dni)}</td>
+    <td>${esc(u.celular)}<br><span class="nota">${esc(u.email)}</span></td><td>${u.reservas_total}</td>
+    <td>${u.bloqueado ? `<span class="chip rojo">Suspendido</span><br><span class="nota">${esc(u.motivo_bloqueo || '')}</span>` : '<span class="chip verde">Activo</span>'}</td>
+    <td>${u.id === user.id ? '' : `
+      <button class="btn chico ${u.bloqueado ? '' : 'rojo'}" data-susp="${u.id}" data-val="${!u.bloqueado}">${u.bloqueado ? 'Reactivar' : 'Suspender'}</button>
+      <button class="btn chico sec" data-rol="${u.id}" data-val="${u.rol === 'admin' ? 'usuario' : 'admin'}">${u.rol === 'admin' ? 'Quitar admin' : 'Hacer admin'}</button>`}</td></tr>`).join('') + '</table>';
+  $$('[data-susp]', c).forEach(b => b.onclick = async () => {
+    const bloquear = b.dataset.val === 'true';
+    const motivo = bloquear ? prompt('Motivo de la suspensión:', 'Incumplimiento del reglamento') : null;
+    if (bloquear && !motivo) return;
+    const { error } = await sb.rpc('admin_bloquear_usuario', { p_usuario: b.dataset.susp, p_bloquear: bloquear, p_motivo: motivo });
+    if (error) return toast(msgError(error), 'error');
+    toast(bloquear ? 'Usuario suspendido' : 'Usuario reactivado'); cargarUsuarios();
+  });
+  $$('[data-rol]', c).forEach(b => b.onclick = async () => {
+    if (!confirm(b.dataset.val === 'admin' ? '¿Dar permisos de administrador a esta persona?' : '¿Quitar permisos de administrador?')) return;
+    const { error } = await sb.rpc('admin_cambiar_rol', { p_usuario: b.dataset.rol, p_rol: b.dataset.val });
+    if (error) return toast(msgError(error), 'error');
+    toast('Rol actualizado'); cargarUsuarios();
+  });
+}
+$('#btnBuscar').onclick = cargarUsuarios;
+
+// ---------- configuración ----------
+async function cargarConfig() {
+  const { data, error } = await sb.from('config').select('*').eq('id', 1).single();
+  if (error) return toast(msgError(error), 'error');
+  const f = $('#fConfig');
+  for (const [k, v] of Object.entries(data)) {
+    const el = f.elements[k]; if (!el) continue;
+    if (el.type === 'checkbox') el.checked = !!v; else el.value = v ?? '';
+  }
+}
+$('#fConfig').onsubmit = async e => {
+  e.preventDefault(); const f = e.target, p = {};
+  for (const el of f.elements) if (el.name) p[el.name] = el.type === 'checkbox' ? el.checked : el.value;
+  const { error } = await sb.rpc('admin_guardar_config', { p });
+  if (error) return toast(msgError(error), 'error');
+  toast('Configuración guardada');
+};
+
+document.addEventListener('click', e => { const c = e.target.closest('[data-cerrar]'); if (c) cerrarModal(c.dataset.cerrar); });
+iniciar();
+</script>
+</body>
+</html>
