@@ -6,7 +6,10 @@
 <meta name="robots" content="noindex">
 <title>Administración – Cancha Grass | EMICOH S.A.</title>
 <link rel="icon" href="../img/favicon.png?v=2">
-<link rel="stylesheet" href="estilos.css?v=2">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.2/dist/umd/supabase.js; connect-src 'self' https://xonmlmdrkllpwfdedwqx.supabase.co wss://xonmlmdrkllpwfdedwqx.supabase.co; img-src 'self' data: blob: https://xonmlmdrkllpwfdedwqx.supabase.co; style-src 'self' 'unsafe-inline'; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'; upgrade-insecure-requests">
+<meta name="referrer" content="no-referrer">
+<link rel="stylesheet" href="estilos.css?v=3">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.2/dist/umd/supabase.js" integrity="sha384-A97u3Qnt9GZHURO9YJZRe7VQgGUeFzcv6I1oIGnUTxQrCxnpQMwR0/G8F2zt9abZ" crossorigin="anonymous"></script>
 </head>
 <body>
 <header>
@@ -28,6 +31,7 @@
    <button data-sec="agenda">Agenda</button>
    <button data-sec="usuarios">Usuarios</button>
    <button data-sec="config">Configuración</button>
+   <button data-sec="seguridad">Seguridad</button>
   </div>
 
   <!-- POR VERIFICAR -->
@@ -112,8 +116,37 @@
     <button class="btn" style="margin-top:16px">Guardar configuración</button>
    </form>
   </section>
+
+  <!-- SEGURIDAD -->
+  <section class="panel sec oculto" id="sec-seguridad" style="margin-top:12px">
+   <h2>Bitácora de seguridad</h2>
+   <p class="nota">Registro de lo que pasa en el sistema: registros, reservas, pagos confirmados o rechazados, suspensiones, cambios de rol, códigos de recuperación, cambios de contraseña e intentos fallidos. Nadie puede borrarlo desde la página.</p>
+   <div class="fila" style="margin-top:10px"><select id="filtroBit"><option value="">Todo</option><option value="cuenta">Cuentas</option><option value="recuperacion">Recuperación</option><option value="clave">Contraseñas</option><option value="reserva">Reservas</option><option value="config">Configuración</option></select><button class="btn chico" id="btnBitacora">Actualizar</button></div>
+   <div id="tablaBitacora" style="margin-top:14px;overflow-x:auto"></div>
+   <h3 style="margin-top:22px">Buenas prácticas para administradores</h3>
+   <ul class="pasos">
+    <li>Antes de dar un código de recuperación, verifica el DNI de la persona (en persona o pidiéndole foto del DNI por WhatsApp) y que el celular coincida con el registrado.</li>
+    <li>Nunca pidas ni anotes contraseñas de los usuarios.</li>
+    <li>El panel se cierra solo tras 30 minutos sin actividad. No dejes tu sesión abierta en equipos compartidos.</li>
+    <li>Usa una contraseña única y larga para tu cuenta de administrador.</li>
+   </ul>
+  </section>
  </div>
 </main>
+
+<div class="modal" id="mCodigo">
+ <div class="caja">
+  <button class="cerrar" data-cerrar="#mCodigo" aria-label="Cerrar">×</button>
+  <h2>Código de recuperación</h2>
+  <p id="codPara"></p>
+  <div class="codigo" id="codValor"></div>
+  <p class="nota">Válido <b>30 minutos</b>, <b>un solo uso</b>, máximo 5 intentos. Entrégalo solo a la persona titular después de verificar su DNI. Al usarlo, se cierran todas sus sesiones.</p>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">
+   <button class="btn chico sec" id="btnCopiarCod">Copiar código</button>
+   <a class="btn chico" id="btnWaCod" target="_blank" rel="noopener noreferrer">Enviar por WhatsApp a su celular</a>
+  </div>
+ </div>
+</div>
 
 <div class="modal" id="mComp">
  <div class="caja">
@@ -123,173 +156,6 @@
  </div>
 </div>
 
-<script type="module">
-import { sb, $, $$, esc, hoyLima, fechaLarga, hh, soles, horaDe, chipEstado, msgError, toast, abrirModal, cerrarModal } from './comun.js?v=2';
-
-let user = null, perfil = null;
-
-async function iniciar() {
-  const { data: { session } } = await sb.auth.getSession();
-  user = session?.user;
-  if (!user) { location.href = './'; return; }
-  const { data } = await sb.from('perfiles').select('*').eq('id', user.id).maybeSingle();
-  perfil = data;
-  $('#zonaUsuario').innerHTML = `<span>${esc(perfil?.nombres || '')}</span><a class="btn chico sec" href="./">Ver reservas</a><button class="btn chico sec" id="btnSalir">Salir</button>`;
-  $('#btnSalir').onclick = async () => { await sb.auth.signOut(); location.href = './'; };
-  if (perfil?.rol !== 'admin' || perfil?.bloqueado) { $('#sinAcceso').classList.remove('oculto'); return; }
-  $('#app').classList.remove('oculto');
-  $('#agDesde').value = hoyLima(); $('#agHasta').value = hoyLima(7);
-  $('#fBloqueo [name=fecha]').value = hoyLima(1);
-  $('#blHora').innerHTML = Array.from({ length: 24 }, (_, h) => `<option value="${h}">${hh(h)}</option>`).join('');
-  $('#blHora').value = 8;
-  cargarPendientes();
-  setInterval(cargarPendientes, 60000);
-}
-
-$$('#tabsAdmin button').forEach(b => b.onclick = () => {
-  $$('#tabsAdmin button').forEach(x => x.classList.toggle('act', x === b));
-  $$('.sec').forEach(s => s.classList.toggle('oculto', s.id !== 'sec-' + b.dataset.sec));
-  ({ verificar: cargarPendientes, agenda: cargarAgenda, usuarios: cargarUsuarios, config: cargarConfig })[b.dataset.sec]();
-});
-
-// ---------- por verificar ----------
-async function cargarPendientes() {
-  const { data, error } = await sb.rpc('admin_pendientes');
-  if (error) return toast(msgError(error), 'error');
-  $('#nPend').textContent = data.length ? `(${data.length})` : '';
-  const c = $('#listaPend');
-  if (!data.length) { c.innerHTML = '<div class="vacio">No hay pagos pendientes de verificar. 👍</div>'; return; }
-  c.innerHTML = data.map(r => `
-    <div class="item">
-      <div class="top"><div><b>${esc(fechaLarga(r.fecha))} · ${hh(r.hora_inicio)} a ${hh(r.hora_inicio + r.horas)}</b><br>
-        ${esc(r.nombre)} · DNI ${esc(r.dni)} · Cel. ${esc(r.celular)}</div>${chipEstado(r.estado)}</div>
-      <p style="margin-top:6px"><b>${soles(r.monto)}</b> por <b>${esc(r.metodo.toUpperCase())}</b>
-        ${r.nro_operacion ? ` · N.° operación: <b>${esc(r.nro_operacion)}</b>` : ''}
-        ${r.estado === 'pendiente_pago' ? `<br><span class="nota">Debe pagar en oficina antes de ${esc(horaDe(r.vence_en))}</span>` : ''}</p>
-      <div class="acciones">
-        ${r.comprobante_path ? `<button class="btn chico sec" data-ver="${esc(r.comprobante_path)}">Ver captura</button>` : ''}
-        <button class="btn chico" data-conf="${r.id}">${r.metodo === 'efectivo' ? 'Recibí el efectivo' : 'Pago correcto · Confirmar'}</button>
-        <button class="btn chico rojo" data-rech="${r.id}">Rechazar</button>
-        <a class="btn chico sec" href="https://wa.me/51${esc(r.celular)}" target="_blank" rel="noopener">WhatsApp</a>
-      </div>
-    </div>`).join('');
-  enlazarAcciones(c, cargarPendientes);
-}
-
-function enlazarAcciones(c, recargar) {
-  $$('[data-ver]', c).forEach(b => b.onclick = () => verComprobante(b.dataset.ver));
-  $$('[data-conf]', c).forEach(b => b.onclick = async () => {
-    const nota = prompt('Nota (opcional), por ejemplo "Yape verificado":', '') ?? null;
-    if (nota === null) return;
-    const { error } = await sb.rpc('admin_confirmar', { p_id: +b.dataset.conf, p_nota: nota || null });
-    if (error) return toast(msgError(error), 'error');
-    toast('Reserva confirmada'); recargar();
-  });
-  $$('[data-rech]', c).forEach(b => b.onclick = async () => {
-    const nota = prompt('Motivo del rechazo (la persona lo verá):', 'No se encontró el pago');
-    if (!nota) return;
-    const { error } = await sb.rpc('admin_rechazar', { p_id: +b.dataset.rech, p_nota: nota });
-    if (error) return toast(msgError(error), 'error');
-    toast('Reserva rechazada'); recargar();
-  });
-  $$('[data-desbloq]', c).forEach(b => b.onclick = async () => {
-    if (!confirm('¿Quitar este bloqueo?')) return;
-    const { error } = await sb.rpc('admin_quitar_bloqueo', { p_id: +b.dataset.desbloq });
-    if (error) return toast(msgError(error), 'error');
-    toast('Bloqueo quitado'); recargar();
-  });
-}
-
-async function verComprobante(ruta) {
-  const { data, error } = await sb.storage.from('comprobantes').createSignedUrl(ruta, 300);
-  if (error) return toast(msgError(error), 'error');
-  $('#compCont').innerHTML = `<img class="comp" src="${esc(data.signedUrl)}" alt="Comprobante"><p class="nota">Enlace válido por 5 minutos.</p>`;
-  abrirModal('#mComp');
-}
-
-// ---------- agenda ----------
-async function cargarAgenda() {
-  const { data, error } = await sb.rpc('admin_reservas', { p_desde: $('#agDesde').value, p_hasta: $('#agHasta').value });
-  if (error) return toast(msgError(error), 'error');
-  const c = $('#tablaAgenda');
-  if (!data.length) { c.innerHTML = '<div class="vacio">Sin reservas en esas fechas.</div>'; return; }
-  c.innerHTML = `<table><tr><th>Fecha</th><th>Hora</th><th>Quién</th><th>Pago</th><th>Estado</th><th></th></tr>` + data.map(r => `
-    <tr><td>${esc(fechaLarga(r.fecha))}</td><td>${hh(r.hora_inicio)}–${hh(r.hora_inicio + r.horas)}</td>
-    <td>${r.tipo === 'bloqueo' ? `<b>BLOQUEO</b>: ${esc(r.motivo)}` : `${esc(r.nombre)}<br><span class="nota">DNI ${esc(r.dni)} · ${esc(r.celular)}</span>`}</td>
-    <td>${r.tipo === 'bloqueo' ? '' : `${soles(r.monto)} ${esc((r.metodo || '').toUpperCase())}${r.nro_operacion ? '<br><span class="nota">Op. ' + esc(r.nro_operacion) + '</span>' : ''}`}</td>
-    <td>${chipEstado(r.estado)}${r.nota_admin ? `<br><span class="nota">${esc(r.nota_admin)}</span>` : ''}</td>
-    <td>${r.tipo === 'bloqueo' && r.estado === 'confirmada' ? `<button class="btn chico sec" data-desbloq="${r.id}">Quitar</button>` : ''}
-        ${r.comprobante_path ? `<button class="btn chico sec" data-ver="${esc(r.comprobante_path)}">Captura</button>` : ''}
-        ${r.tipo === 'reserva' && ['pendiente_pago', 'por_verificar'].includes(r.estado) ? `<button class="btn chico" data-conf="${r.id}">Confirmar</button>` : ''}
-        ${r.tipo === 'reserva' && ['pendiente_pago', 'por_verificar', 'confirmada'].includes(r.estado) ? `<button class="btn chico rojo" data-rech="${r.id}">Anular</button>` : ''}</td></tr>`).join('') + '</table>';
-  enlazarAcciones(c, cargarAgenda);
-}
-$('#btnAgenda').onclick = cargarAgenda;
-
-$('#fBloqueo').onsubmit = async e => {
-  e.preventDefault(); const f = new FormData(e.target);
-  const { error } = await sb.rpc('admin_bloquear_horario', { p_fecha: f.get('fecha'), p_hora: +f.get('hora'), p_horas: +f.get('horas'), p_motivo: f.get('motivo') });
-  if (error) return toast(msgError(error), 'error');
-  toast('Horario bloqueado'); cargarAgenda();
-};
-
-// ---------- usuarios ----------
-async function cargarUsuarios() {
-  const { data, error } = await sb.rpc('admin_usuarios', { p_buscar: $('#buscar').value.trim() });
-  if (error) return toast(msgError(error), 'error');
-  const c = $('#tablaUsuarios');
-  if (!data.length) { c.innerHTML = '<div class="vacio">Sin resultados.</div>'; return; }
-  c.innerHTML = `<table><tr><th>Nombre</th><th>DNI</th><th>Contacto</th><th>Reservas</th><th>Estado</th><th></th></tr>` + data.map(u => `
-    <tr><td>${esc(u.nombre)}${u.rol === 'admin' ? ' <span class="chip azul">ADMIN</span>' : ''}</td><td>${esc(u.dni)}</td>
-    <td>${esc(u.celular)}<br><span class="nota">${esc(u.email)}</span></td><td>${u.reservas_total}</td>
-    <td>${u.bloqueado ? `<span class="chip rojo">Suspendido</span><br><span class="nota">${esc(u.motivo_bloqueo || '')}</span>` : '<span class="chip verde">Activo</span>'}</td>
-    <td>${u.id === user.id ? '' : `
-      <button class="btn chico ${u.bloqueado ? '' : 'rojo'}" data-susp="${u.id}" data-val="${!u.bloqueado}">${u.bloqueado ? 'Reactivar' : 'Suspender'}</button>
-      <button class="btn chico sec" data-rol="${u.id}" data-val="${u.rol === 'admin' ? 'usuario' : 'admin'}">${u.rol === 'admin' ? 'Quitar admin' : 'Hacer admin'}</button>
-      ${u.rol === 'admin' ? '' : `<button class="btn chico sec" data-elim="${u.id}" title="Para quien olvidó su contraseña: podrá registrarse de nuevo con su DNI">Eliminar cuenta</button>`}`}</td></tr>`).join('') + '</table>';
-  $$('[data-elim]', c).forEach(b => b.onclick = async () => {
-    if (!confirm('¿Eliminar esta cuenta? Sus reservas pendientes se cancelan y la persona podrá registrarse de nuevo con su DNI. No se puede deshacer.')) return;
-    const { error } = await sb.rpc('admin_eliminar_cuenta', { p_usuario: b.dataset.elim });
-    if (error) return toast(msgError(error), 'error');
-    toast('Cuenta eliminada'); cargarUsuarios();
-  });
-  $$('[data-susp]', c).forEach(b => b.onclick = async () => {
-    const bloquear = b.dataset.val === 'true';
-    const motivo = bloquear ? prompt('Motivo de la suspensión:', 'Incumplimiento del reglamento') : null;
-    if (bloquear && !motivo) return;
-    const { error } = await sb.rpc('admin_bloquear_usuario', { p_usuario: b.dataset.susp, p_bloquear: bloquear, p_motivo: motivo });
-    if (error) return toast(msgError(error), 'error');
-    toast(bloquear ? 'Usuario suspendido' : 'Usuario reactivado'); cargarUsuarios();
-  });
-  $$('[data-rol]', c).forEach(b => b.onclick = async () => {
-    if (!confirm(b.dataset.val === 'admin' ? '¿Dar permisos de administrador a esta persona?' : '¿Quitar permisos de administrador?')) return;
-    const { error } = await sb.rpc('admin_cambiar_rol', { p_usuario: b.dataset.rol, p_rol: b.dataset.val });
-    if (error) return toast(msgError(error), 'error');
-    toast('Rol actualizado'); cargarUsuarios();
-  });
-}
-$('#btnBuscar').onclick = cargarUsuarios;
-
-// ---------- configuración ----------
-async function cargarConfig() {
-  const { data, error } = await sb.from('config').select('*').eq('id', 1).single();
-  if (error) return toast(msgError(error), 'error');
-  const f = $('#fConfig');
-  for (const [k, v] of Object.entries(data)) {
-    const el = f.elements[k]; if (!el) continue;
-    if (el.type === 'checkbox') el.checked = !!v; else el.value = v ?? '';
-  }
-}
-$('#fConfig').onsubmit = async e => {
-  e.preventDefault(); const f = e.target, p = {};
-  for (const el of f.elements) if (el.name) p[el.name] = el.type === 'checkbox' ? el.checked : el.value;
-  const { error } = await sb.rpc('admin_guardar_config', { p });
-  if (error) return toast(msgError(error), 'error');
-  toast('Configuración guardada');
-};
-
-document.addEventListener('click', e => { const c = e.target.closest('[data-cerrar]'); if (c) cerrarModal(c.dataset.cerrar); });
-iniciar();
-</script>
+<script type="module" src="admin.js?v=3"></script>
 </body>
 </html>

@@ -92,3 +92,34 @@ table{width:100%;border-collapse:collapse;font-size:.88rem}
 th,td{padding:8px;border-bottom:1px solid var(--borde);text-align:left;vertical-align:top}
 th{font-size:.75rem;text-transform:uppercase;color:var(--gris)}
 .comp{max-width:100%;border-radius:10px;border:1px solid var(--borde);margin-top:8px}
+/* contraseñas */
+.clave{position:relative}
+.clave input{padding-right:46px}
+.ojo{position:absolute;right:4px;top:50%;transform:translateY(-50%);background:none;border:0;color:var(--gris);padding:8px;border-radius:8px;display:flex}
+.ojo:hover,.ojo:focus-visible{color:var(--tinta);background:var(--fondo)}
+.caps{font-size:.78rem;color:#8a5a00;background:#fff3d1;border-radius:8px;padding:4px 8px;margin-top:6px}
+.fuerza{display:flex;align-items:center;gap:8px;margin-top:6px;font-size:.78rem;color:var(--gris)}
+.fuerza .barra{flex:0 0 90px;height:6px;background:var(--borde);border-radius:4px;overflow:hidden}
+.fuerza i{display:block;height:100%;width:0;background:var(--rojo);transition:.2s}
+.fuerza[data-n="2"] i{background:var(--naranja)}.fuerza[data-n="3"] i{background:#7cc242}.fuerza[data-n="4"] i{background:var(--verde)}
+.enlaces{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:12px;font-size:.86rem}
+.enlaces a{text-decoration:none}
+.pasos{margin:10px 0 4px 18px;font-size:.9rem}
+.pasos li{margin:4px 0}
+.codigo{font-family:Consolas,monospace;font-size:2rem;font-weight:800;letter-spacing:4px;text-align:center;background:var(--fondo);border:2px dashed var(--cielo);border-radius:14px;padding:14px;margin:12px 0}
+input.mono{font-family:Consolas,monospace;letter-spacing:3px;text-transform:uppercase}
+.datos{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:.9rem;background:var(--fondo);border-radius:12px;padding:12px;margin:10px 0}
+.datos span{color:var(--gris)}
+hr.sep{border:0;border-top:1px dashed var(--borde);margin:18px 0}
+.btn.usuario-btn{background:var(--fondo);color:var(--tinta);border:1px solid var(--borde)}
+.metodo:disabled{opacity:.45;cursor:not-allowed;background:var(--fondo)}
+.ciber{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px;margin-top:10px}
+.ciber div{border:1px solid var(--borde);border-left:4px solid var(--cielo);border-radius:12px;padding:12px;font-size:.88rem;background:#fff}
+.ciber b{display:block;margin-bottom:2px}
+.consejos{background:#eef8ff;border:1px solid #cfe9fa;border-radius:12px;padding:12px 16px;margin-top:14px;font-size:.9rem}
+.consejos ul{margin:6px 0 0 18px}
+details.politica{margin-top:14px;border:1px solid var(--borde);border-radius:12px;padding:10px 14px;font-size:.88rem}
+details.politica summary{cursor:pointer;font-weight:700}
+details.politica p,details.politica ul{margin-top:8px}
+details.politica ul{margin-left:18px}
+.estado-ok{color:var(--verde2);font-weight:700}

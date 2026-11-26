@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>EMICOH S.A. | Empresa Minera Corazón de Huayna</title>
 <meta name="description" content="Empresa Minera Corazón de Huayna S.A. (EMICOH S.A.) – Phara, Sandia, Puno.">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'; upgrade-insecure-requests">
+<meta name="referrer" content="strict-origin-when-cross-origin">
 <link rel="icon" href="img/favicon.png?v=2">
 <style>
 :root{--cielo:#2aa7e6;--cielo2:#bfe5f8;--naranja:#f39c12;--amarillo:#f7c51e;--verde:#1fa83a;--cafe:#7a4a1e;--tinta:#1c2733;--gris:#5b6672}
@@ -78,6 +80,7 @@ footer img{height:70px;margin-bottom:10px}
    <a href="#valores">Valores</a>
    <a href="#seguridad">Seguridad</a>
    <a href="#ambiente">Medio ambiente</a>
+   <a href="#ciberseguridad">Ciberseguridad</a>
    <a href="cancha/" style="color:var(--verde);font-weight:700">⚽ Reservar cancha</a>
    <a href="#contacto">Contacto</a>
   </nav>
@@ -163,6 +166,21 @@ footer img{height:70px;margin-bottom:10px}
  </div>
 </section>
 
+<section class="alt-bg" id="ciberseguridad">
+ <div class="wrap">
+  <span class="tag">Ciberseguridad</span>
+  <h2>Protegemos tu información y te ayudamos a evitar fraudes</h2>
+  <p class="lead">Así cuidamos nuestros servicios en línea y la información de las personas que se relacionan con nosotros, de acuerdo con la Ley N.° 29733 de Protección de Datos Personales.</p>
+  <div class="cards c4">
+   <div class="card"><div class="ic" style="background:#e3f4fc">🔒</div><h3>Sitio seguro</h3><p>Nuestra web funciona solo con conexión cifrada (HTTPS) y con protecciones contra ataques web. Nuestra única dirección oficial es <b>emicoh.github.io</b>.</p></div>
+   <div class="card"><div class="ic" style="background:#fff3dc">🎣</div><h3>Cuidado con el fraude</h3><p>EMICOH S.A. <b>no cobra</b> por ofertas de trabajo, entrevistas ni exámenes. Desconfía de mensajes que pidan dinero o datos a nombre de la empresa.</p></div>
+   <div class="card"><div class="ic" style="background:#e3f6e7">🔑</div><h3>Nunca pedimos contraseñas</h3><p>Nadie de la empresa te pedirá tus contraseñas, códigos de verificación ni datos de tu banco, Yape o Plin.</p></div>
+   <div class="card"><div class="ic" style="background:#fde8e8">🛡️</div><h3>Datos personales</h3><p>Usamos tus datos solo para el fin con el que nos los diste, con acceso restringido, y no los vendemos ni los compartimos con terceros.</p></div>
+  </div>
+  <p class="lead" style="margin-top:22px;font-size:1rem">¿Recibiste un mensaje sospechoso a nombre de EMICOH S.A.? No respondas, no pages y avísanos por nuestros canales de contacto.</p>
+ </div>
+</section>
+
 <section class="band" style="background:linear-gradient(90deg,#16733a,#1fa83a)">
  <div class="wrap">
   <h2 style="color:#fff">⚽ Cancha Grass – Sector Huayna</h2>
@@ -190,7 +208,7 @@ footer img{height:70px;margin-bottom:10px}
    <div class="row"><div><b>Teléfono / WhatsApp</b>Por confirmar</div></div>
    <div class="row"><div><b>Correo</b>Por confirmar</div></div>
   </div>
-  <form onsubmit="event.preventDefault();alert('Gracias por escribirnos. Este formulario estará activo pronto.')">
+  <form id="fContacto">
    <h3>Envíanos un mensaje</h3>
    <input placeholder="Nombre" required>
    <input placeholder="Correo o teléfono" required>
@@ -205,10 +223,6 @@ footer img{height:70px;margin-bottom:10px}
  <p>© 2026 Empresa Minera Corazón de Huayna S.A. · Phara – Sandia – Puno</p>
 </footer>
 
-<script>
-const n=document.getElementById('nav');
-document.getElementById('menu').onclick=()=>n.classList.toggle('open');
-n.querySelectorAll('a').forEach(a=>a.onclick=()=>n.classList.remove('open'));
-</script>
+<script src="sitio.js?v=1"></script>
 </body>
 </html>
